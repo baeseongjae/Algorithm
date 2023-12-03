@@ -1,46 +1,59 @@
 from collections import deque
+import sys
 
-def BFS(x,y):
-    q.append((x,y))
-    dx = [-1,0,1,0]
-    dy = [0,1,0,-1]
-    visited[x][y] = 1
-    while q:
-        x, y = q.popleft()
-        for d in range(4):
-            nx = x + dx[d]
-            ny = y + dy[d]
-            # 인덱스 범위 안에 있으면서, 같은 색이면서, 방문 안한 경우
-            if 0<=nx<N and 0<=ny<N and a[nx][ny] == a[x][y] and not visited[nx][ny]:
-                visited[nx][ny] = 1  # 방문체크 후 큐에 넣음
-                q.append((nx,ny))
-
-
+sys.setrecursionlimit(1000000)
+input = sys.stdin.readline
 N = int(input())
-a = [list(input()) for _ in range(N)]
-q = deque()
+graph = [0] * N
+visited = [[False for _ in range(N)] for _ in range(N)]
+dx = [-1, 1, 0, 0]
+dy = [0, 0, -1, 1]
 
-# 적록색약 아닌 경우
-visited = [[0] * N for _ in range(N)]
+# 인풋값으로 그리드 판 채우기
+for i in range(N):
+    graph[i] = list(input())
+
+def BFS(x, y):
+    queue = deque()
+    queue.append((x, y))
+    visited[x][y] = True
+
+    while queue:
+        curX, curY = queue.popleft()
+        # 다음 next좌표를 상하좌우로 찾는 로직
+        for i in range(4):
+            nx = curX + dx[i]
+            ny = curY + dy[i]
+
+            # 인덱스 범위안에 있고 방문하지 않은 좌표이면 탐색
+            if 0 <= nx < N and 0 <= ny < N and not visited[nx][ny]:
+                # 같은 색상이면 
+                if graph[curX][curY] == graph[nx][ny]:
+                    queue.append((nx, ny))
+                    visited[nx][ny] = True
+
+# BFS 활용하여 적록색약이 아닌 사람이 보는 section수 출력 로직
 cnt1 = 0
-for i in range(N):
-    for j in range(N):
-        if not visited[i][j]:  # 아직 방문 안한 경우만 체킹
-            BFS(i,j)
-            cnt1 += 1
 
-# 적록색약인 경우
-for i in range(N):
-    for j in range(N):
-        if a[i][j] == 'G':
-            a[i][j] = 'R'
-
-visited = [[0] * N for _ in range(N)]
-cnt2 = 0
 for i in range(N):
     for j in range(N):
         if not visited[i][j]:
-            BFS(i,j)
+            BFS(i, j)
+            cnt1 += 1
+
+# BFS 활용하여 적록색약인 사람이 보는 section수 출력 로직   
+cnt2 = 0
+visited = [[False for _ in range(N)] for _ in range(N)]
+
+for i in range(N):
+    for j in range(N):
+        if graph[i][j] == 'G':
+            graph[i][j] = 'R'
+
+for i in range(N):
+    for j in range(N):
+        if not visited[i][j]:
+            BFS(i, j)
             cnt2 += 1
 
 print(cnt1, cnt2)
