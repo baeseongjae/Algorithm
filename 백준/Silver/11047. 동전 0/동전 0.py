@@ -1,13 +1,13 @@
 N, K = map(int, input().split())
-arr = [0] * N
-cnt = 0
+arr = []
+answer = 0
 
 for i in range(N):
-    arr[i] = int(input())
+    data = int(input())
+    arr.append(data)
 
 for i in range(N-1, -1, -1):
-    if K >= arr[i]:
-        cnt += (K // arr[i])
+    if K >= i:
+        answer += K // arr[i]
         K %= arr[i]
-
-print(cnt)
+print(answer)
