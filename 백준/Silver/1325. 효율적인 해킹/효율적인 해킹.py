@@ -2,38 +2,45 @@ from collections import deque
 import sys
 
 input = sys.stdin.readline
-
 N, M = map(int, input().split())
-arr = [[] for _ in range(N+1)]
-relyList = [0] * (N+1)
+graph = [[] for _ in range(N+1)]
 answer = []
 
-for _ in range(M):
-    n1, n2 = map(int, input().split())
-    arr[n1].append(n2)
+for i in range(M):
+    s, e = map(int, input().split())
+    graph[e].append(s)
 
-def BFS(node, graph):
-    visited = [False] * (N+1)
-    queue = deque()
-    queue.append(node)
-    visited[node] = True
+# 시작노드 부터 완전탐색
+def BFS(node):
+    depth = 0
+    queue = deque([node])
+    visited[node] = 1 
 
     while queue:
-        cur = queue.popleft()
-        for v in graph[cur]:
-            if not visited[v]:
-                queue.append(v)
-                visited[v] = True
-                relyList[v] += 1
+        v = queue.popleft()
 
+        for next in graph[v]:
+            if not visited[next]:
+                depth += 1
+                queue.append(next)
+                visited[next] = 1
+                
+    return depth
+
+maxValue = 0
+# cnt 가장 큰 컴퓨터번호 찾기.
 for i in range(1, N+1):
-    BFS(i, arr)
+    visited = [0] * (N+1)
+    cnt = BFS(i)
 
-maxValue = max(relyList)
+    if cnt > maxValue:
+        maxValue = cnt
+        answer = []
+        answer.append(i)
+    elif cnt == maxValue:
+        answer.append(i)
 
-for index, value in enumerate(relyList):
-    if value == maxValue:
-        answer.append(index)
-
-answer.sort()
 print(*answer)
+
+# 한번에 가장 많은 컴퓨터를 해킹할 수 있는 컴퓨터는?
+# 모든 컴퓨터를 시작점으로 완전탐색 시행하여 총 뎁스 파악 => 가장 큰거 골라서 배열삽입 후 출력.
